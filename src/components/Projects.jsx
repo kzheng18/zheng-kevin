@@ -52,14 +52,14 @@ const Projects = () => {
     // },
     {
   id: 3,
-  slug: 'speed-type',
-  title: 'Speed Type',
+  slug: 'gorilla-type',
+  title: 'Gorilla Type',
   description:
     'A modern typing-speed game with real-time WPM charting, accuracy + consistency analytics.',
   category: 'web',
   technologies: ['React', 'Vite', 'Tailwind CSS', 'Node.js', 'Express', 'Zustand', 'Lucide'],
   github: '',
-  demo: 'https://speed-type-six.vercel.app/',
+  demo: 'https://gorillatype1.vercel.app/',
 },
     {
       id: 4,

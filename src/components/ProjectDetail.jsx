@@ -112,8 +112,8 @@ const ProjectDetail = () => {
       ],
     },
 
-    "speed-type": {
-      title: "Speed Type",
+    "gorilla-type": {
+      title: "Gorilla Type",
       category: "web",
       technologies: [
         "React",
@@ -125,7 +125,7 @@ const ProjectDetail = () => {
         "Lucide React",
       ],
       github: "",
-      demo: "https://speed-type-six.vercel.app",
+      demo: "https://gorillatype1.vercel.app/",
 
       overview:
         "A speed typing game focused on measurable improvement through real-time feedback. The app delivers live WPM tracking (including per-second fluctuations), accuracy and error statistics, and configurable test lengths, with a minimal dark UI optimized for repeat practice sessions.",
