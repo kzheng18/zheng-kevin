@@ -152,7 +152,7 @@ const About = () => {
               </div>
 
               <p className="text-dark-text leading-relaxed opacity-0 animate-fade-in" style={{ animationDelay: '2s', animationFillMode: 'forwards' }}>
-                I'm currently a senior at UNC majoring in Computer Science and Data Science. I'm a passionate developer focusing on software engineering, with hand-ons experience building web applications and optimizing AI/ML pipelines and technologies.
+                I recently graduated from the University of North Carolina at Chapel Hill with majors in Computer Science and Data Science. I'm a passionate developer focusing on software engineering, with hand-ons experience building web applications and optimizing AI/ML pipelines and technologies.
               </p>
 
               <div className="flex flex-wrap gap-2 pt-2">
