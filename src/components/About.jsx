@@ -1,105 +1,131 @@
-import { useEffect, useState } from 'react';
+import { projects } from '../data/projects';
+
+// ---- Static data, built once at module load (no per-render recompute) ----
+
+// Roadmap / experience timeline
+const roadmap = [
+    {
+      icon: '🎓',
+      role: 'Computer Science & Data Science',
+      org: 'UNC Chapel Hill',
+      kind: 'Education',
+      period: 'Aug 2022 – May 2026',
+      sort: 202605,
+    },
+    {
+      icon: '💻',
+      role: 'Software Engineer',
+      org: 'AfterQuery Experts',
+      kind: 'Internship',
+      period: 'Sep 2025 – Jan 2026',
+      duration: '5 mos',
+      location: 'Remote',
+      sort: 202601,
+      desc: 'Built and deployed containerized coding challenges with automated test suites to evaluate engineering candidates. Wrote Bash and CLI tooling to speed up testing in Linux environments.',
+      skills: ['Bash', 'Linux'],
+      more: 6,
+    },
+    {
+      icon: '📱',
+      role: 'iOS Apprentice Developer',
+      org: 'App Team Carolina',
+      kind: 'Apprenticeship',
+      period: 'Sep 2024 – Dec 2025',
+      duration: '1 yr 4 mos',
+      sort: 202512,
+      desc: 'Built iOS apps with Swift and SwiftUI in Xcode. Completed learning projects connecting frontend to backend to practice full-stack development.',
+      skills: ['iOS Development', 'Xcode'],
+      more: 4,
+    },
+    {
+      icon: '🛠️',
+      role: 'Full Stack Engineer',
+      org: 'UNC Computer Science Experience Lab (CSXL)',
+      kind: 'Internship',
+      period: 'Aug 2023 – Dec 2023',
+      duration: '5 mos',
+      location: 'On-site',
+      sort: 202312,
+      desc: 'Built the Friends feature end-to-end: friend requests, accept/decline, friend lists, and "who\'s in CSXL" presence. Designed the data model and backend APIs, added real-time presence, and shipped the UI. Developed in a containerized environment (Docker, Postgres, Caddy) with unit tests in pytest.',
+      skills: ['FastAPI', 'Software Infrastructure'],
+      more: 9,
+    },
+    {
+      icon: '🍜',
+      role: 'Server',
+      org: 'Golden City Chinese Restaurant',
+      kind: 'Part-time',
+      period: 'Jan 2019 – May 2021',
+      duration: '2 yrs 5 mos',
+      sort: 202105,
+      skills: ['Customer Service', 'Cooking'],
+      more: 2,
+    },
+  ];
+
+  // Projects as timeline branches (for the unified view)
+  const projectIcons = { 'ai/ml': '🧠', web: '🌐', fullstack: '🧩', data: '📊', backend: '⚙️' };
+  const projectNodes = projects.map((p) => ({
+    icon: projectIcons[p.category] || '💡',
+    role: p.title,
+    kind: p.category,
+    project: true,
+    date: p.date,
+    sort: p.sort,
+    desc: p.description,
+    github: p.github,
+    demo: p.demo,
+    skills: p.technologies.slice(0, 5),
+    more: Math.max(0, p.technologies.length - 5),
+  }));
+
+  // Single merged timeline: roles + projects, most recent first (projects branch off the rail)
+  const timelineItems = [...roadmap, ...projectNodes].sort((a, b) => (b.sort || 0) - (a.sort || 0));
+
+  // Contact methods
+  const contactMethods = [
+    {
+      name: 'Email',
+      value: 'kwzheng18@gmail.com',
+      href: 'mailto:kwzheng18@gmail.com',
+      external: false,
+      icon: (
+        <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      ),
+    },
+    {
+      name: 'GitHub',
+      value: '@kzheng18',
+      href: 'https://github.com/kzheng18',
+      external: true,
+      icon: (
+        <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+        </svg>
+      ),
+    },
+    {
+      name: 'LinkedIn',
+      value: 'Kevin Zheng',
+      href: 'https://www.linkedin.com/in/kzheng18/',
+      external: true,
+      icon: (
+        <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+        </svg>
+      ),
+    },
+  ];
 
 const About = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [terminalLines, setTerminalLines] = useState([]);
-  const [cursorVisible, setCursorVisible] = useState(true);
-  const [showAllSkills, setShowAllSkills] = useState(false);
-
-  useEffect(() => {
-    setIsVisible(true);
-
-    const lines = [
-      '> initializing portfolio ...',
-      '> loading profile ...',
-      '> importing projects ...',
-      '> compiling ...',
-      '> rendering ...',
-      '> [██████████████████] 100% ✓',
-      '> ready to explore'
-    ];
-
-    lines.forEach((line, index) => {
-      setTimeout(() => {
-        setTerminalLines(prev => [...prev, line]);
-      }, index * 350);
-    });
-
-    // Cursor blink
-    const cursorInterval = setInterval(() => {
-      setCursorVisible(prev => !prev);
-    }, 530);
-
-    return () => clearInterval(cursorInterval);
-  }, []);
-
-  // All skills in a single array with categories
-  const allSkills = [
-    // Programming Languages
-    { name: 'Python', level: 88, category: 'Programming Languages' },
-    { name: 'TypeScript', level: 82, category: 'Programming Languages' },
-    { name: 'JavaScript', level: 84, category: 'Programming Languages' },
-    { name: 'SQL', level: 78, category: 'Programming Languages' },
-
-    // Frontend (Modern Web)
-    { name: 'React', level: 86, category: 'Frontend' },
-    { name: 'Next.js', level: 80, category: 'Frontend' },
-    { name: 'Tailwind CSS', level: 88, category: 'Frontend' },
-
-    // Backend & APIs
-    { name: 'FastAPI', level: 84, category: 'Backend & APIs' },
-    { name: 'Node.js', level: 80, category: 'Backend & APIs' },
-    { name: 'Express', level: 78, category: 'Backend & APIs' },
-    { name: 'REST API Design', level: 82, category: 'Backend & APIs' },
-
-    // Databases
-    { name: 'PostgreSQL', level: 78, category: 'Databases' },
-    { name: 'MongoDB', level: 75, category: 'Databases' },
-    { name: 'Redis', level: 65, category: 'Databases' },
-
-    // AI / ML (Applied, Product-Oriented)
-    { name: 'OpenAI API', level: 84, category: 'AI/ML & LLMs' },
-    { name: 'LLM Application Development (RAG basics)', level: 70, category: 'AI/ML & LLMs' },
-    { name: 'PyTorch', level: 72, category: 'AI/ML' },
-    { name: 'Scikit-learn', level: 74, category: 'AI/ML' },
-    { name: 'OpenCV', level: 78, category: 'Computer Vision' },
-    { name: 'NumPy', level: 80, category: 'Data' },
-    { name: 'Pandas', level: 78, category: 'Data' },
-
-    // Cloud & DevOps
-    { name: 'Docker', level: 75, category: 'DevOps' },
-    { name: 'Kubernetes', level: 68, category: 'DevOps' },
-    { name: 'AWS (core services)', level: 70, category: 'Cloud' },
-    { name: 'Firebase', level: 76, category: 'Cloud' },
-    { name: 'CI/CD (GitHub Actions)', level: 62, category: 'DevOps' },
-
-    // Engineering Practices
-    { name: 'Git', level: 82, category: 'Engineering Practices' },
-    { name: 'Testing (Pytest / Jest)', level: 68, category: 'Engineering Practices' },
-    { name: 'System Design Fundamentals', level: 68, category: 'Engineering Practices' },
-    { name: 'Performance Optimization (baseline)', level: 60, category: 'Engineering Practices' },
-  ];
-
-
-  // Sort all skills by level (highest to lowest)
-  const sortedSkills = [...allSkills].sort((a, b) => b.level - a.level);
-
-  // Get top 10 or all skills based on state
-  const displayedSkills = showAllSkills ? sortedSkills : sortedSkills.slice(0, 10);
-
-  const experience = [
-    // add this later on
-  ];
-
-  const interests = [
-    { icon: '🤖', title: 'AI & Machine Learning', desc: 'Exploring neural networks and computer vision' },
-    { icon: '🎯', title: 'Open Source', desc: 'Contributing to open source projects' },
-    { icon: '📚', title: 'Continuous Learning', desc: 'Always picking up new technologies' },
-    { icon: '🎾', title: 'Sports Analytics', desc: 'Building tools for performance analysis' },
-  ];
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-x-hidden">
       {/* Minimal grid background */}
       <div
         className="fixed inset-0 opacity-[0.03]"
@@ -113,403 +139,295 @@ const About = () => {
       />
 
       {/* Hero Section */}
-      <section className="min-h-screen relative flex items-center justify-center pt-30 px-4">
-        <div className="relative max-w-5xl mx-auto w-full">
-          {/* Terminal header - centered */}
-          <div className={`glass-effect max-w-5xl mx-auto mb-8 rounded overflow-hidden transition-all duration-700 hover:border-dark-text/20 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <div className="border-b border-dark-border px-4 py-2 flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-dark-border hover:bg-red-500 transition-colors cursor-pointer"></div>
-              <div className="w-3 h-3 rounded-full bg-dark-border hover:bg-yellow-500 transition-colors cursor-pointer"></div>
-              <div className="w-3 h-3 rounded-full bg-dark-border hover:bg-green-500 transition-colors cursor-pointer"></div>
-            </div>
-            <div className="p-4 font-mono text-sm">
-              {terminalLines.map((line, index) => (
-                <div key={index} className="mb-1 text-dark-muted animate-fade-in" style={{ animationDelay: `${index * 2}s` + .2}}>
-                  {line}
-                </div>
-              ))}
-              <div className="flex items-center mt-2">
-                <span className={`text-dark-muted transition-opacity duration-100 ${cursorVisible ? 'opacity-100' : 'opacity-0'}`}>_</span>
-              </div>
-            </div>
+      <section className="min-h-screen relative flex items-center justify-center pt-24 px-4">
+        <div className="relative max-w-3xl mx-auto w-full text-center animate-slide-up">
+          {/* Eyebrow pill */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-8 rounded-full border border-dark-border bg-dark-surface/50 text-xs font-mono uppercase tracking-[0.2em] text-dark-muted">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+            Software Engineer
           </div>
 
-          {/* Main content - grid layout */}
-          <div className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center transition-all pt-10 duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            {/* Left: Information */}
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <div className="text-sm font-mono text-dark-muted opacity-0 animate-fade-in" style={{ animationDelay: '2s', animationFillMode: 'forwards' }}>
-                  // developer & creator
-                </div>
-                <h1 className="text-5xl md:text-6xl font-bold tracking-tight opacity-0 animate-slide-up" style={{ animationDelay: '2s', animationFillMode: 'forwards' }}>
-                  <span className="gradient-text inline-block hover:scale-105 transition-transform duration-500">Kevin Zheng</span>
-                </h1>
-              </div>
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-4">
+            <span className="gradient-text inline-block">Kevin Zheng</span>
+          </h1>
 
-              <div className="opacity-0 animate-slide-in" style={{ animationDelay: '2s', animationFillMode: 'forwards' }}>
-                <div className="h-px w-20 bg-dark-border"></div>
-              </div>
-
-              <p className="text-dark-text leading-relaxed opacity-0 animate-fade-in" style={{ animationDelay: '2s', animationFillMode: 'forwards' }}>
-                I recently graduated from the University of North Carolina at Chapel Hill with majors in Computer Science and Data Science. I'm a passionate developer focusing on software engineering, with hand-ons experience building web applications and optimizing AI/ML pipelines and technologies.
-              </p>
-
-              <div className="flex flex-wrap gap-2 pt-2">
-                {['Full Stack', 'AI/ML', 'Cloud', 'DevOps', 'Open Source', 'MLOps', 'Backend Engineering', 'System Design' ].map((tag, i) => (
-                  <span
-                    key={i}
-                    className="stagger-item px-3 py-1 text-xs font-mono bg-dark-surface border border-dark-border text-dark-muted rounded hover:border-dark-text hover:text-dark-text transition-all cursor-default"
-                    style={{ animationDelay: `${2 + i * 0.1}s` }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-6 pt-6">
-                {[
-                  { value: '3+', label: 'Years Exp' },
-                  { value: '5+', label: 'Projects' },
-                  { value: '10+', label: 'Technologies' },
-                ].map((stat, i) => (
-                  <div
-                    key={i}
-                    className="text-center group cursor-default opacity-0 animate-scale-in"
-                    style={{ animationDelay: `${2 + i * 0.1}s`, animationFillMode: 'forwards' }}
-                  >
-                    <div className="text-3xl font-bold font-mono mb-1 text-dark-text group-hover:scale-110 transition-transform duration-300">
-                      {stat.value}
-                    </div>
-                    <div className="text-xs font-mono text-dark-muted tracking-wider uppercase">
-                      {stat.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right: Profile Image */}
-            <div className="opacity-0 animate-fade-in" style={{ animationDelay: '2.2s', animationFillMode: 'forwards' }}>
-              <div className="relative group flex justify-center">
-                <div className="relative">
-                  <img
-                    src="./zkw_headshot.jpg"
-                    alt="Kevin Zheng"
-                    className="w-64 h-64 md:w-90 md:h-90 object-cover rounded-full border-4 border-dark-border group-hover:border-dark-text/40 transition-all duration-500 group-hover:scale-105"
-                    style={{ objectPosition: 'center 20%' }}
-                  />
-                </div>
-              </div>
-            </div>
+          <div className="text-sm font-mono text-dark-muted mb-6">
+            unc chapel hill grad · cs + data science
           </div>
 
-          {/* Scroll indicator */}
-          <div className="relative py-15 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 opacity-0 animate-fade-in" style={{ animationDelay: '2s', animationFillMode: 'forwards' }}>
-            <span className="text-xs font-mono text-dark-muted tracking-wider">Scroll to explore</span>
-            <svg className="w-5 h-5 text-dark-muted animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
+          <p className="text-xl md:text-2xl text-dark-text leading-relaxed max-w-2xl mx-auto mb-8">
+            I build full-stack web apps and applied AI/ML systems — focused on shipping real products, not demos.
+          </p>
+
+          <div className="flex flex-wrap justify-center gap-2 mb-10">
+            {['Full Stack', 'AI/ML', 'Backend', 'Cloud'].map((tag, i) => (
+              <span
+                key={i}
+                className="px-3 py-1.5 text-sm font-mono rounded-full bg-dark-surface border border-dark-border text-dark-muted hover:border-dark-text hover:text-dark-text transition-all cursor-default"
+              >
+                {tag}
+              </span>
+            ))}
           </div>
-        </div>
-      </section>
 
-      {/* Technical Skills Section */}
-      <section className="relative pt-50 px-4">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-sm font-mono text-dark-muted mb-2 opacity-0 animate-fade-in" style={{ animationFillMode: 'forwards', animationDelay: '2.2s'}}>// skills</div>
-          {/* Terminal Window */}
-          <div className="glass-effect rounded overflow-hidden border border-dark-border opacity-0 animate-fade-in" style={{ animationFillMode: 'forwards', animationDelay: '2.2s'}}>
-            {/* Terminal Header */}
-            <div className="border-b border-dark-border px-4 py-3 flex items-center justify-between bg-dark-surface/50">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-dark-border hover:bg-red-500 transition-colors cursor-pointer"></div>
-                <div className="w-3 h-3 rounded-full bg-dark-border hover:bg-yellow-500 transition-colors cursor-pointer"></div>
-                <div className="w-3 h-3 rounded-full bg-dark-border hover:bg-green-500 transition-colors cursor-pointer"></div>
-              </div>
-              <div className="text-xs font-mono text-dark-muted flex items-center gap-2">
-                <span className="hidden sm:inline">kevin@portfolio:</span>
-                <span className="text-dark-text">~/skills</span>
-              </div>
-              <div className="flex items-center gap-2 text-dark-muted text-xs font-mono">
-                <span className="hidden md:inline">zsh</span>
-              </div>
-            </div>
+          {/* CTAs */}
+          <div className="flex flex-wrap justify-center gap-3 mb-14">
+            <button
+              onClick={() => scrollTo('work')}
+              className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-dark-text text-dark-bg font-mono text-sm font-semibold hover:bg-white transition-all hover:scale-105"
+            >
+              View my work
+              <svg className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+            </button>
+            <button
+              onClick={() => scrollTo('contact')}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-dark-border text-dark-text font-mono text-sm hover:border-dark-text hover:bg-dark-surface/40 transition-all"
+            >
+              Get in touch
+            </button>
+          </div>
 
-            {/* Terminal Content */}
-            <div className="p-6 font-mono text-sm bg-dark-bg/50">
-              {/* Command prompt */}
-              <div className="mb-4 flex items-center gap-2">
-                <span className="text-dark-muted">$</span>
-                <span className="text-dark-text">cat skills.txt | sort -rn | head -{showAllSkills ? sortedSkills.length : 10}</span>
-                <span className="inline-block w-2 h-4 bg-dark-text animate-pulse ml-1"></span>
-              </div>
-
-              {/* Output header */}
-              <div className="mb-3 pb-2 border-b border-dark-border/50">
-                <div className="grid grid-cols-12 gap-2 text-xs text-dark-muted uppercase tracking-wider">
-                  <div className="col-span-1">#</div>
-                  <div className="col-span-7 md:col-span-8">skill</div>
-                  <div className="col-span-4 md:col-span-3 text-right">level</div>
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-6 max-w-lg mx-auto">
+            {[
+              { value: '3+', label: 'Years' },
+              { value: '5', label: 'Projects' },
+              { value: '15+', label: 'Tech' },
+            ].map((stat, i) => (
+              <div key={i} className="group cursor-default">
+                <div className="text-4xl font-bold font-mono mb-1 text-dark-text group-hover:scale-110 transition-transform duration-300">
+                  {stat.value}
                 </div>
-              </div>
-
-              {/* Skills list */}
-              <div className="space-y-2">
-                {displayedSkills.map((skill, index) => {
-                  const globalIndex = sortedSkills.findIndex(s => s.name === skill.name);
-                  const barWidth = Math.round((skill.level / 100) * 30); // 30 chars max width
-                  const bar = '█'.repeat(barWidth) + '░'.repeat(30 - barWidth);
-
-                  return (
-                    <div
-                      key={skill.name}
-                      className="group hover:bg-dark-surface/30 p-2 rounded transition-all duration-200"
-                      style={{
-                        animation: 'slideInFromRight 0.5s ease-out',
-                        animationDelay: `${index * 40}ms`,
-                        animationFillMode: 'backwards'
-                      }}
-                    >
-                      <div className="grid grid-cols-12 gap-2 items-center">
-                        {/* Rank */}
-                        <div className="col-span-1">
-                          <span className="text-dark-muted group-hover:text-dark-text transition-colors">
-                            {String(globalIndex + 1).padStart(2, '0')}
-                          </span>
-                        </div>
-
-                        {/* Skill name and category */}
-                        <div className="col-span-7 md:col-span-8">
-                          <div className="flex flex-col">
-                            <div className="flex items-center gap-2">
-                              {globalIndex < 3 && (
-                                <span className="text-dark-text">★</span>
-                              )}
-                              <span className="text-dark-text group-hover:text-white transition-colors font-semibold">
-                                {skill.name}
-                              </span>
-                            </div>
-                            <span className="text-xs text-dark-muted mt-0.5">
-                              [{skill.category}]
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Progress bar and percentage */}
-                        <div className="col-span-4 md:col-span-3">
-                          <div className="flex flex-col items-end gap-1">
-                            <span className="text-dark-text group-hover:text-white font-bold tabular-nums">
-                              {skill.level}%
-                            </span>
-                            <div className="hidden lg:block text-xs text-dark-muted group-hover:text-dark-text transition-colors whitespace-nowrap overflow-hidden">
-                              {bar}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Mobile progress bar */}
-                      <div className="lg:hidden mt-2 text-xs text-dark-muted group-hover:text-dark-text transition-colors overflow-x-auto">
-                        <div className="whitespace-nowrap">{bar}</div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Command output footer */}
-              <div className="mt-6 pt-4 border-t border-dark-border/50">
-                <div className="flex items-center justify-between text-xs text-dark-muted mb-3">
-                  <span>
-                    Showing {displayedSkills.length} of {sortedSkills.length} entries
-                  </span>
-                  <span>
-                    Avg: {Math.round(sortedSkills.reduce((acc, s) => acc + s.level, 0) / sortedSkills.length)}%
-                  </span>
+                <div className="text-sm font-mono text-dark-muted tracking-wider uppercase">
+                  {stat.label}
                 </div>
-
-                {/* Toggle command */}
-                <button
-                  onClick={() => setShowAllSkills(!showAllSkills)}
-                  className="group flex items-center gap-2 text-dark-muted hover:text-dark-text transition-colors"
-                >
-                  <span className="text-dark-muted">$</span>
-                  <span className="group-hover:text-dark-text">
-                    {showAllSkills ? 'head -10 skills.txt' : `cat skills.txt # show all ${sortedSkills.length}`}
-                  </span>
-                  <svg
-                    className={`w-3 h-3 transition-transform duration-300 ${showAllSkills ? 'rotate-180' : ''}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* Scroll indicator */}
-          <div className="relative py-15 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 opacity-0 animate-fade-in" style={{ animationDelay: '2s', animationFillMode: 'forwards' }}>
-            <span className="text-xs font-mono text-dark-muted tracking-wider">Scroll to explore</span>
-            <svg className="w-5 h-5 text-dark-muted animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-          </div>
-      </section>
-
-      {/* add this later on*/}
-      {/* Experience Section */}
-      {/* <section className="relative py-16 px-4">
-        <div className="max-w-5xl mx-auto">
-          <div className="mb-10">
-            <div className="text-sm font-mono text-dark-muted mb-2">// professional journey</div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-3">
-              <span className="gradient-text">Experience</span>
-            </h2>
-          </div>
-
-          <div className="space-y-6">
-            {experience.map((exp, idx) => (
-              <div key={idx} className="glass-effect rounded p-6 hover:shadow-xl transition-all duration-500 group">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-3">
-                  <div>
-                    <h3 className="text-xl font-bold text-dark-text mb-1">{exp.role}</h3>
-                    <p className="text-base font-mono text-dark-muted">{exp.company}</p>
-                  </div>
-                  <div className="text-sm font-mono text-dark-muted mt-2 md:mt-0">{exp.period}</div>
-                </div>
-                <p className="text-dark-muted mb-3">{exp.description}</p>
-                <ul className="space-y-2">
-                  {exp.achievements.map((achievement, i) => (
-                    <li key={i} className="flex items-start gap-3 text-dark-muted text-sm">
-                      <svg className="w-4 h-4 mt-0.5 flex-shrink-0 text-dark-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>{achievement}</span>
-                    </li>
-                  ))}
-                </ul>
               </div>
             ))}
           </div>
+
+          {/* Scroll indicator */}
+          <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+            <span className="text-sm font-mono text-dark-muted tracking-wider">scroll</span>
+            <svg className="w-5 h-5 text-dark-muted animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </div>
         </div>
-      </section> */}
+      </section>
 
-      {/* Interests & Hobbies Section - Terminal Style */}
-      <section className="relative pt-50 px-4 pb-20">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-sm font-mono text-dark-muted mb-2 opacity-0 animate-fade-in" style={{ animationFillMode: 'forwards', animationDelay: '2s' }}> // beyond the code</div>
-          {/* Terminal Window */}
-          <div className="glass-effect rounded overflow-hidden border border-dark-border opacity-0 animate-fade-in" style={{ animationFillMode: 'forwards', animationDelay: '2s' }}>
-            {/* Terminal Header */}
-            <div className="border-b border-dark-border px-4 py-3 flex items-center justify-between bg-dark-surface/50">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-dark-border hover:bg-red-500 transition-colors cursor-pointer"></div>
-                <div className="w-3 h-3 rounded-full bg-dark-border hover:bg-yellow-500 transition-colors cursor-pointer"></div>
-                <div className="w-3 h-3 rounded-full bg-dark-border hover:bg-green-500 transition-colors cursor-pointer"></div>
-              </div>
-              <div className="text-xs font-mono text-dark-muted flex items-center gap-2">
-                <span className="hidden sm:inline">kevin@portfolio:</span>
-                <span className="text-dark-text">~/interests</span>
-              </div>
-              <div className="flex items-center gap-2 text-dark-muted text-xs font-mono">
-                <span className="hidden md:inline">zsh</span>
-              </div>
-            </div>
+      {/* Experience + Projects Timeline */}
+      <section id="work" className="relative pt-24 px-4 scroll-mt-24">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-10">
+            <div className="text-sm font-mono text-dark-muted mb-2">// timeline</div>
+            <h2 className="text-3xl md:text-4xl font-bold gradient-text">Experience &amp; Projects</h2>
+            <p className="text-base text-dark-muted mt-3 max-w-xl">
+              Roles and education on the line; projects branch off where they happened.
+            </p>
+          </div>
 
-            {/* Terminal Content */}
-            <div className="p-6 md:p-8 font-mono text-sm bg-dark-bg/50">
-              {/* Command prompt */}
-              <div className="mb-6 flex items-center gap-2">
-                <span className="text-dark-muted">$</span>
-                <span className="text-dark-text">cat interests.md</span>
-                <span className="inline-block w-2 h-4 bg-dark-text animate-pulse ml-1"></span>
-              </div>
+          <div className="relative">
+            {/* Timeline rail */}
+            <div className="absolute left-6 top-2 bottom-2 w-px bg-gradient-to-b from-dark-border via-dark-border to-transparent"></div>
 
-              {/* Content sections */}
-              <div className="space-y-6">
-                {/* Tennis */}
-                <div>
-                  <div className="text-xs text-dark-muted mb-2">## 🎾 Tennis</div>
-                  <div className="text-xs text-dark-muted mb-3 pl-4">
-                    consistency • decision-making • performance loops
+            <div className="space-y-6">
+              {timelineItems.map((item, i) =>
+                item.project ? (
+                  /* PROJECT — branches off the rail with a horizontal dashed connector */
+                  <div
+                    key={i}
+                    className="relative flex items-center group"
+                    style={{
+                      animation: 'slideInFromRight 0.5s ease-out',
+                      animationDelay: `${i * 70}ms`,
+                      animationFillMode: 'backwards'
+                    }}
+                  >
+                    {/* Horizontal dashed branch from the rail (rail sits at 24px) */}
+                    <div className="shrink-0 flex items-center" style={{ paddingLeft: '24px' }}>
+                      <div className="w-6 md:w-10 border-t-2 border-dashed border-dark-muted/40 group-hover:border-dark-text/40 transition-colors"></div>
+                    </div>
+
+                    {/* Small branch node */}
+                    <div className="relative z-10 shrink-0 w-9 h-9 rounded-lg bg-dark-surface border border-dashed border-dark-muted/50 flex items-center justify-center text-lg transition-all duration-300 group-hover:border-dark-text/50 group-hover:scale-110">
+                      {item.icon}
+                    </div>
+
+                    {/* Compact project card */}
+                    <div className="ml-3 flex-1 glass-effect rounded-xl p-4 md:p-5 transition-all duration-300 group-hover:border-dark-text/25 group-hover:-translate-y-0.5">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-3">
+                        <h3 className="text-base md:text-lg font-bold text-dark-text group-hover:text-white transition-colors">
+                          {item.role}
+                        </h3>
+                        <span className="shrink-0 text-xs font-mono text-dark-muted whitespace-nowrap sm:mt-0.5">{item.date}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <span className="px-2 py-0.5 text-xs font-mono uppercase tracking-wider rounded-full border border-dark-border text-dark-muted">
+                          {item.kind}
+                        </span>
+                        <span className="text-xs font-mono text-dark-muted">project</span>
+                      </div>
+
+                      <p className="text-sm md:text-base text-dark-muted leading-relaxed mt-2.5">{item.desc}</p>
+
+                      <div className="flex flex-wrap items-center gap-2 mt-3">
+                        {item.skills.map((s) => (
+                          <span key={s} className="px-2 py-0.5 text-xs bg-dark-surface border border-dark-border text-dark-muted rounded">
+                            {s}
+                          </span>
+                        ))}
+                        {item.more ? <span className="text-xs text-dark-muted">+{item.more}</span> : null}
+                      </div>
+
+                      {/* Links — only when the project is live / has a repo */}
+                      {(item.github || item.demo) && (
+                        <div className="flex flex-wrap items-center gap-4 mt-4 pt-3 border-t border-dark-border/50">
+                          {item.github && (
+                            <a
+                              href={item.github}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 text-xs font-mono text-dark-muted hover:text-dark-text transition-colors"
+                            >
+                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                              </svg>
+                              Code
+                            </a>
+                          )}
+                          {item.demo && (
+                            <a
+                              href={item.demo}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="group/link inline-flex items-center gap-1.5 text-xs font-mono text-dark-text hover:text-white transition-colors"
+                            >
+                              <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                              Live demo
+                              <svg className="w-3.5 h-3.5 group-hover/link:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                            </a>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <p className="text-xs text-dark-muted leading-relaxed pl-4 mb-3">
-                    I play tennis weekly and treat it like a craft: deliberate practice, measurable goals, and constant adjustment.
-                    It's a fast feedback environment—reading patterns, choosing high-percentage options under pressure, and improving one habit at a time.
-                    That same loop (observe → test → refine) is how I approach engineering work.
-                  </p>
-                  <div className="pl-4 flex flex-wrap gap-2">
-                    <span className="text-xs text-dark-muted">▸ Weekly Matches</span>
-                    <span className="text-xs text-dark-muted">▸ Structured Practice</span>
-                    <span className="text-xs text-dark-muted">▸ Competitive Play</span>
-                    <span className="text-xs text-dark-muted">▸ Performance Notes</span>
-                  </div>
-                </div>
+                ) : (
+                  /* ROLE / EDUCATION — sits on the rail */
+                  <div
+                    key={i}
+                    className="relative flex gap-5 md:gap-6 group"
+                    style={{
+                      animation: 'slideInFromRight 0.5s ease-out',
+                      animationDelay: `${i * 70}ms`,
+                      animationFillMode: 'backwards'
+                    }}
+                  >
+                    {/* Emoji avatar node */}
+                    <div className="relative z-10 shrink-0 w-12 h-12 rounded-xl bg-dark-surface border border-dark-border flex items-center justify-center text-2xl transition-all duration-300 group-hover:border-dark-text/50 group-hover:scale-110 group-hover:-rotate-6">
+                      {item.icon}
+                    </div>
 
-                {/* AI Research */}
-                <div>
-                  <div className="text-xs text-dark-muted mb-2">## 🤖 AI Research & Prototyping</div>
-                  <p className="text-xs text-dark-muted leading-relaxed pl-4 mb-3">
-                    I like turning papers and ideas into working demos: LLM apps, RAG experiments, and computer vision prototypes.
-                    My focus is pragmatic—latency, evaluation, and real product constraints—not just "cool outputs".
-                  </p>
-                  <div className="pl-4 flex flex-wrap gap-2">
-                    <span className="text-xs text-dark-muted">▸ RAG & Eval</span>
-                    <span className="text-xs text-dark-muted">▸ Computer Vision</span>
-                    <span className="text-xs text-dark-muted">▸ Rapid Prototypes</span>
-                  </div>
-                </div>
+                    {/* Card */}
+                    <div className="flex-1 glass-effect rounded-xl p-5 md:p-6 transition-all duration-300 group-hover:border-dark-text/25 group-hover:-translate-y-0.5">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                        <div>
+                          <h3 className="text-lg md:text-xl text-dark-text font-bold group-hover:text-white transition-colors">
+                            {item.role}
+                          </h3>
+                          <div className="text-base text-dark-muted mt-0.5">{item.org}</div>
+                        </div>
+                        {item.period && (
+                          <div className="text-sm font-mono text-dark-muted sm:text-right shrink-0 whitespace-nowrap">
+                            <div>{item.period}</div>
+                            {item.duration && <div className="text-dark-muted/60 mt-0.5">{item.duration}</div>}
+                          </div>
+                        )}
+                      </div>
 
-                {/* Learning */}
-                <div>
-                  <div className="text-xs text-dark-muted mb-2">## 📚 Deliberate Learning</div>
-                  <p className="text-xs text-dark-muted leading-relaxed pl-4 mb-3">
-                    I keep a "build-to-learn" habit: pick a topic, implement something small, and write down what broke and why.
-                    It's how I level up quickly without collecting surface-level buzzwords.
-                  </p>
-                  <div className="pl-4 flex flex-wrap gap-2">
-                    <span className="text-xs text-dark-muted">▸ Build Notes</span>
-                    <span className="text-xs text-dark-muted">▸ Small Experiments</span>
-                  </div>
-                </div>
+                      <div className="flex flex-wrap items-center gap-2 mt-3">
+                        <span className="px-2.5 py-0.5 text-xs font-mono uppercase tracking-wider rounded-full border border-dark-border text-dark-muted">
+                          {item.kind}
+                        </span>
+                        {item.location && (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-mono rounded-full border border-dark-border text-dark-muted">
+                            <span className="w-1.5 h-1.5 rounded-full bg-dark-muted"></span>
+                            {item.location}
+                          </span>
+                        )}
+                      </div>
 
-                {/* Open Source */}
-                <div>
-                  <div className="text-xs text-dark-muted mb-2">## 🎯 Open Source & Tooling</div>
-                  <p className="text-xs text-dark-muted leading-relaxed pl-4 mb-3">
-                    I enjoy building developer-friendly utilities and contributing improvements where I can—docs, bug fixes,
-                    and incremental features that make tools easier to use in the real world.
-                  </p>
-                  <div className="pl-4 flex flex-wrap gap-2">
-                    <span className="text-xs text-dark-muted">▸ Docs & Fixes</span>
-                    <span className="text-xs text-dark-muted">▸ Developer UX</span>
-                  </div>
-                </div>
+                      {item.desc && (
+                        <p className="text-base text-dark-muted leading-relaxed mt-4">{item.desc}</p>
+                      )}
 
-                {/* Fitness */}
-                <div>
-                  <div className="text-xs text-dark-muted mb-2">## 🏃 Training & Recovery</div>
-                  <p className="text-xs text-dark-muted leading-relaxed pl-4 mb-3">
-                    I train consistently (running + strength work) to stay sharp for deep focus sessions. Good energy, better sleep,
-                    and fewer "burnout cycles" makes me a more reliable builder.
-                  </p>
-                  <div className="pl-4 flex flex-wrap gap-2">
-                    <span className="text-xs text-dark-muted">▸ Running</span>
-                    <span className="text-xs text-dark-muted">▸ Strength</span>
-                    <span className="text-xs text-dark-muted">▸ Consistency</span>
+                      {item.skills && (
+                        <div className="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-dark-border/50">
+                          {item.skills.map((s) => (
+                            <span
+                              key={s}
+                              className="px-2 py-0.5 text-sm bg-dark-surface border border-dark-border text-dark-text rounded"
+                            >
+                              {s}
+                            </span>
+                          ))}
+                          {item.more ? (
+                            <span className="text-sm text-dark-muted">+{item.more} more</span>
+                          ) : null}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </div>
+                )
+              )}
             </div>
           </div>
         </div>
       </section>
 
+      {/* Contact Section */}
+      <section id="contact" className="relative pt-24 px-4 pb-24 scroll-mt-24">
+        <div className="max-w-5xl mx-auto">
+          <div className="mb-8">
+            <div className="text-sm font-mono text-dark-muted mb-2">// contact</div>
+            <h2 className="text-3xl md:text-4xl font-bold gradient-text">Get in Touch</h2>
+            <p className="text-base text-dark-muted mt-3 max-w-xl">
+              Open to new opportunities and collaborations — reach out through any channel.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {contactMethods.map((method) => (
+              <a
+                key={method.name}
+                href={method.href}
+                target={method.external ? '_blank' : undefined}
+                rel={method.external ? 'noopener noreferrer' : undefined}
+                className="group glass-effect rounded-2xl p-6 flex flex-col gap-4 border border-dark-border hover:-translate-y-1 hover:border-dark-text/30 transition-all duration-300"
+              >
+                <div className="text-dark-text group-hover:text-white transition-colors">
+                  {method.icon}
+                </div>
+                <div>
+                  <div className="text-lg font-bold text-dark-text group-hover:text-white transition-colors">
+                    {method.name}
+                  </div>
+                  <div className="text-base text-dark-muted mt-0.5 break-all">{method.value}</div>
+                </div>
+                <div className="inline-flex items-center gap-2 text-sm font-mono text-dark-muted group-hover:text-dark-text transition-colors mt-auto">
+                  open
+                  <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
