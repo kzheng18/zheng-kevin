@@ -38,7 +38,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-14 md:h-16">
           {/* Logo - terminal style */}
           <button
-            onClick={() => navigateToPage('/about')}
+            onClick={() => navigateToPage('/')}
             className="flex items-center gap-2 font-mono text-sm text-dark-text hover:text-white transition-all duration-300 group"
           >
             <span className="text-dark-muted">$</span>
@@ -48,14 +48,12 @@ const Navbar = () => {
           {/* Desktop Navigation - terminal tabs */}
           <div className="hidden md:flex items-center gap-1">
             {[
-              { name: 'about', path: '/about' },
-              { name: 'projects', path: '/projects' },
-              { name: 'contact', path: '/contact' }
+              { name: 'about', path: '/' }
             ].map((item) => (
               <button
                 key={item.name}
                 onClick={() => navigateToPage(item.path)}
-                className={`px-4 py-1.5 font-mono text-xs transition-all duration-300 border-b-2 ${
+                className={`px-4 py-1.5 font-mono text-sm transition-all duration-300 border-b-2 ${
                   isActivePage(item.path)
                     ? 'text-dark-text border-dark-text bg-dark-surface/30'
                     : 'text-dark-muted border-transparent hover:text-dark-text hover:bg-dark-surface/20'
@@ -86,14 +84,12 @@ const Navbar = () => {
       >
         <div className="glass-effect border-t border-dark-border px-4 py-4 space-y-1 bg-dark-bg/50">
           {[
-            { name: 'about', path: '/about' },
-            { name: 'projects', path: '/projects' },
-            { name: 'contact', path: '/contact' }
+            { name: 'about', path: '/' }
           ].map((item) => (
             <button
               key={item.name}
               onClick={() => navigateToPage(item.path)}
-              className={`flex items-center gap-2 w-full text-left px-3 py-2 font-mono text-xs transition-all duration-300 ${
+              className={`flex items-center gap-2 w-full text-left px-3 py-2 font-mono text-sm transition-all duration-300 ${
                 isActivePage(item.path)
                   ? 'text-dark-text bg-dark-surface/30'
                   : 'text-dark-muted hover:text-dark-text hover:bg-dark-surface/20'
