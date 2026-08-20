@@ -19,9 +19,11 @@ dist-ssr
 *.gif
 *.bmp
 *.svg
+!public/favicon.svg
 
 # pdf
 *.pdf
+
 
 # Editor directories and files
 .vscode/*
